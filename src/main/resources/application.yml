@@ -1,0 +1,83 @@
+server:
+  port: 7777
+  servlet:
+    context-path: /auth-service
+  forward-headers-strategy: framework
+spring:
+  application:
+    name: auth_service
+    product: false
+  datasource:
+    url: jdbc:postgresql://localhost:4444/learning_flatform?useSSL=false&useUnicode=yes&characterEncoding=UTF-8&options=-c%20TimeZone=Asia/Ho_Chi_Minh
+    username: postgres
+    password: 123456
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      schema: auth
+      minimum-idle: 1
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss,
+    time-zone: UTC
+  messages:
+    basename: message/messages
+    encoding: UTF-8
+  data:
+    redis:
+      host: 10.0.65.171
+      port: 6379
+      password:
+      lettuce:
+        pool:
+          max-active: 10
+          max-idle: 8
+          min-idle: 5
+config:
+  scheduled:
+    sync-user-to-magnet:
+      cron: 0 0 23 * * ?
+      zone: Asia/Ho_Chi_Minh
+  report-template:
+    folder: template
+kafka:
+  producer:
+    bootstrap-servers: 10.0.132.134:9093
+    client-id: 0x2af18c-5da6-4b5e-99b1-0c1751dcbd9k
+    key-serializer: org.apache.kafka.common.serialization.StringSerializer
+    value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    retries: 3
+    acks: all
+    enable-idempotence: true
+    batch-size: 16384
+    linger-ms: 10
+    buffer-memory: 33554432
+    request-timeout-ms: 30000
+    delivery-timeout-ms: 120000
+    properties:
+      security:
+        protocol: SASL_PLAINTEXT # HOẶC SASL_SSL
+        mechanism: PLAIN # HOẶC SCRAM-SHA-256
+      sasl:
+        username: admin
+        password: admin
+  topics:
+    logging-topic: de-log-topic
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 20000
+        loggerLevel: FULL
+        retryer: default
+  httpclient:
+    enabled: true
+  okhttp:
+    enabled: false
