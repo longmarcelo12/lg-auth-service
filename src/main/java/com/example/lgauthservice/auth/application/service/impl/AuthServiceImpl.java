@@ -6,15 +6,21 @@ import com.example.lgauthservice.auth.domain.entities.Role;
 import com.example.lgauthservice.auth.domain.entities.User;
 import com.example.lgauthservice.auth.enums.Provider;
 import com.example.lgauthservice.auth.enums.Status;
+import com.example.lgauthservice.auth.infrastructure.config.JwtProperties;
+import com.example.lgauthservice.auth.presentation.models.request.LoginRequest;
 import com.example.lgauthservice.auth.presentation.models.request.RegisterRequest;
+import com.example.lgauthservice.auth.presentation.models.response.LoginResponse;
 import com.example.lgauthservice.auth.presentation.models.response.RegisterResponse;
 import com.example.lgauthservice.auth.presentation.repository.EmailVerificationRepository;
 import com.example.lgauthservice.auth.presentation.repository.RoleRepository;
 import com.example.lgauthservice.auth.presentation.repository.UserRepository;
 import com.example.lgauthservice.shared.domain.exception.BadRequestException;
+import com.example.lgauthservice.shared.domain.exception.UnauthorizedException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +40,8 @@ public class AuthServiceImpl implements AuthService {
 
     private final EmailVerificationRepository emailVerificationRepository;
 
+    private final JwtProperties jwtProperties;
+
     public RegisterResponse registerUser(RegisterRequest registerRequest) {
        // validate
         validateRegisterRequest(registerRequest);
@@ -49,6 +57,28 @@ public class AuthServiceImpl implements AuthService {
 
 
         return RegisterResponse.builder().email(registerRequest.getEmail()).build();
+    }
+
+    public LoginResponse login(LoginRequest loginRequest) {
+        User user = userRepository.findByEmail(loginRequest.getEmail())
+                .orElseThrow(() -> new UnauthorizedException("Email or password invalid"));S
+
+
+                return new LoginResponse();
+    }
+
+    public void validatePassword(String rawPassword, User user) {
+        if(!user.getStatus().equals(Status.ACTIVE)) {
+            throw new UnauthorizedException("Account is not active");
+        }
+
+        if(!user.getProvider().equals(Provider.LOCAL)) {
+            throw new UnauthorizedException("Provider is not LOCAL");
+        }
+
+        if(!passwordEncoder.matches(rawPassword, user.getPassword())) {
+            throw new UnauthorizedException("Email or password invalid");
+        }
     }
 
     public void validateRegisterRequest(RegisterRequest registerRequest) {

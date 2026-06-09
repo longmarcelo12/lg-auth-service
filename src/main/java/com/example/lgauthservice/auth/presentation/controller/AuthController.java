@@ -2,7 +2,9 @@ package com.example.lgauthservice.auth.presentation.controller;
 
 import com.example.lgauthservice.auth.application.service.AuthService;
 import com.example.lgauthservice.auth.application.service.EmailService;
+import com.example.lgauthservice.auth.presentation.models.request.LoginRequest;
 import com.example.lgauthservice.auth.presentation.models.request.RegisterRequest;
+import com.example.lgauthservice.auth.presentation.models.response.LoginResponse;
 import com.example.lgauthservice.auth.presentation.models.response.RegisterResponse;
 import com.example.lgauthservice.auth.presentation.models.response.VerifyTokenResponse;
 import com.example.lgauthservice.shared.infrastructure.web.response.ApiResponse;
@@ -26,8 +28,16 @@ public class AuthController {
         return responseFactory.ok(response);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest loginRequest) {
+        LoginResponse response = authService.login(loginRequest);
+        return responseFactory.ok(response);
+    }
+
     @GetMapping("/verify-token")
     public ResponseEntity<ApiResponse<VerifyTokenResponse>> verifyToken(@Valid @RequestParam("token") String token) {
         return responseFactory.ok(emailService.verifyToken(token));
     }
+
+
 }
