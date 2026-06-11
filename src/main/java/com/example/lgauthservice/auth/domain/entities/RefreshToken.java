@@ -16,6 +16,6 @@ import java.time.Instant;
 public class RefreshToken extends BaseEntity {
     private long userId;
     private String token;
-    private Instant expiresAt;
+    private Instant expiredAt;
     private boolean revoked;
 }

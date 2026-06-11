@@ -1,7 +1,28 @@
 package com.example.lgauthservice.shared.domain.exception;
 
-public class UnauthorizedException extends RuntimeException {
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.http.HttpStatus;
+
+@Setter
+@Getter
+public class UnauthorizedException extends BusinessException {
+    private String type;
+    public UnauthorizedException(String message, Object data) {
+        super(
+                HttpStatus.UNAUTHORIZED,
+                message,
+                data
+        );
+        this.type = "Login";
+    }
+
     public UnauthorizedException(String message) {
-        super(message);
+        super(
+                HttpStatus.UNAUTHORIZED,
+                message,
+                null
+        );
+        this.type = "Login";
     }
 }

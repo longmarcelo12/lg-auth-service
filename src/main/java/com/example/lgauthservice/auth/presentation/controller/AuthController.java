@@ -2,11 +2,14 @@ package com.example.lgauthservice.auth.presentation.controller;
 
 import com.example.lgauthservice.auth.application.service.AuthService;
 import com.example.lgauthservice.auth.application.service.EmailService;
+import com.example.lgauthservice.auth.application.service.RefreshTokenService;
 import com.example.lgauthservice.auth.presentation.models.request.LoginRequest;
+import com.example.lgauthservice.auth.presentation.models.request.RefreshTokenRequest;
 import com.example.lgauthservice.auth.presentation.models.request.RegisterRequest;
 import com.example.lgauthservice.auth.presentation.models.response.LoginResponse;
+import com.example.lgauthservice.auth.presentation.models.response.RefreshTokenResponse;
 import com.example.lgauthservice.auth.presentation.models.response.RegisterResponse;
-import com.example.lgauthservice.auth.presentation.models.response.VerifyTokenResponse;
+import com.example.lgauthservice.auth.presentation.models.response.VerifyEmailResponse;
 import com.example.lgauthservice.shared.infrastructure.web.response.ApiResponse;
 import com.example.lgauthservice.shared.infrastructure.web.response.ResponseFactory;
 import jakarta.validation.Valid;
@@ -21,6 +24,7 @@ public class AuthController {
     private final AuthService authService;
     private final EmailService emailService;
     private final ResponseFactory responseFactory;
+    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<RegisterResponse>> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
@@ -34,10 +38,16 @@ public class AuthController {
         return responseFactory.ok(response);
     }
 
-    @GetMapping("/verify-token")
-    public ResponseEntity<ApiResponse<VerifyTokenResponse>> verifyToken(@Valid @RequestParam("token") String token) {
+    @GetMapping("/verify-email")
+    public ResponseEntity<ApiResponse<VerifyEmailResponse>> verifyEmail(@Valid @RequestParam("token") String token) {
         return responseFactory.ok(emailService.verifyToken(token));
     }
 
+    @PostMapping("/refresh-token")
+    public ResponseEntity<ApiResponse<RefreshTokenResponse>> refreshToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
+        return responseFactory.ok(refreshTokenService.refreshToken(refreshTokenRequest));
+    }
 
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<LoginResponse>> logout(@Valid @RequestBody LoginRequest loginRequest) {}
 }

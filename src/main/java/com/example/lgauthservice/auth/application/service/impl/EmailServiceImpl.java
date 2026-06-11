@@ -4,13 +4,12 @@ import com.example.lgauthservice.auth.application.service.EmailService;
 import com.example.lgauthservice.auth.domain.entities.EmailVerificationToken;
 import com.example.lgauthservice.auth.domain.entities.User;
 import com.example.lgauthservice.auth.enums.Status;
-import com.example.lgauthservice.auth.presentation.models.response.VerifyTokenResponse;
+import com.example.lgauthservice.auth.presentation.models.response.VerifyEmailResponse;
 import com.example.lgauthservice.auth.presentation.repository.EmailVerificationRepository;
 import com.example.lgauthservice.auth.presentation.repository.UserRepository;
 import com.example.lgauthservice.shared.domain.exception.BadRequestException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -26,7 +25,7 @@ public class EmailServiceImpl implements EmailService {
 
     }
 
-    public VerifyTokenResponse verifyToken(String token) {
+    public VerifyEmailResponse verifyToken(String token) {
         EmailVerificationToken emailVerificationToken = emailVerificationRepository
                 .findByToken(token)
                 .orElseThrow(() -> new BadRequestException("Token not found", null));
@@ -41,6 +40,6 @@ public class EmailServiceImpl implements EmailService {
 
         emailVerificationRepository.delete(emailVerificationToken);
 
-        return VerifyTokenResponse.builder().email(user.getEmail()).message("Verify Successfully!").build();
+        return VerifyEmailResponse.builder().email(user.getEmail()).message("Verify Successfully!").build();
     }
 }
