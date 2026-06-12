@@ -5,4 +5,6 @@ import com.example.lgauthservice.auth.presentation.models.response.GenerateToken
 
 public interface JwtService {
     String generateAccessToken(User user);
+
+    String extractUserId(String token);
 }
