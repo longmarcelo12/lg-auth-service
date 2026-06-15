@@ -8,8 +8,10 @@ public class ResetPasswordRequest {
     @NotBlank(message = "token is not empty")
     private String token;
 
+    @NotBlank
     private String password;
 
-    private String confirmPassword;
+    @NotBlank
+    private String passwordConfirmation;
 }
 

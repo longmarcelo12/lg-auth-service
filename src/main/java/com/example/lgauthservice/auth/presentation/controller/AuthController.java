@@ -49,5 +49,12 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<LoginResponse>> logout(@Valid @RequestBody LoginRequest loginRequest) {}
+    public String logout(@Valid @RequestBody LoginRequest loginRequest) {
+        return "logout";
+    }
+
+    @GetMapping("/verify-token")
+    public String verifyToken() {
+        return "Token verified";
+    }
 }

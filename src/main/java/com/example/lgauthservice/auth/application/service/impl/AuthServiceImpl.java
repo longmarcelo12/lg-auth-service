@@ -14,6 +14,7 @@ import com.example.lgauthservice.auth.infrastructure.config.JwtProperties;
 import com.example.lgauthservice.auth.presentation.models.request.ForgotPasswordRequest;
 import com.example.lgauthservice.auth.presentation.models.request.LoginRequest;
 import com.example.lgauthservice.auth.presentation.models.request.RegisterRequest;
+import com.example.lgauthservice.auth.presentation.models.request.ResetPasswordRequest;
 import com.example.lgauthservice.auth.presentation.models.response.LoginResponse;
 import com.example.lgauthservice.auth.presentation.models.response.RegisterResponse;
 import com.example.lgauthservice.auth.presentation.models.response.UserLoginData;
@@ -27,8 +28,6 @@ import com.example.lgauthservice.shared.utils.Utilities;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -162,5 +161,38 @@ public class AuthServiceImpl implements AuthService {
         passwordResetRepository.save(passwordResetToken);
 
 //        emailService.sendForgotPasswordEmail(forgotPasswordRequest.getEmail(), token);
+    }
+
+    public void resetPassword(ResetPasswordRequest resetPasswordRequest) {
+        try {
+            PasswordResetToken passwordResetToken = passwordResetRepository.findByToken(resetPasswordRequest.getToken())
+                                                    .orElseThrow(() -> new BadRequestException("Token not found", null));
+
+            // Kiểm tra mật khẩu nhập lại có đúng không
+            if(!resetPasswordRequest.getPassword().equals(resetPasswordRequest.getPasswordConfirmation())) {
+                throw new BadRequestException("Password not confirmed", null);
+            }
+
+            // Kiểm tra token đã sử dụng chưa
+            if(Boolean.TRUE.equals(passwordResetToken.isUsed()))
+            {
+                throw new BadRequestException("Token is used", null);
+            }
+
+            // Lấy thông tin user và cập nhật lại mật khẩu
+            User user = userRepository.findById(passwordResetToken.getUserId()).orElseThrow(() -> new UnauthorizedException("User not found"));
+            user.setPassword(passwordEncoder.encode(resetPasswordRequest.getPassword()));
+            userRepository.save(user);
+
+            // cập nhật lại trạng thái thành đã sử dụng của token
+            passwordResetToken.setUsed(Boolean.TRUE);
+            passwordResetRepository.save(passwordResetToken);
+
+            // cập nhật lại revoked = true tại bảng refresh_tokens theo user này để đăng xuất khỏi tất cả các thiết bị
+
+        }
+        catch(Exception e) {
+            throw new BadRequestException("error", e);
+        }
     }
 }
