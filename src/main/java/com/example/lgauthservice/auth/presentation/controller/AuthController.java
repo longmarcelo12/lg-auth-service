@@ -57,4 +57,9 @@ public class AuthController {
     public String verifyToken() {
         return "Token verified";
     }
+
+    @GetMapping("/send-message-kafka")
+    public String sendMessageKafka(@Valid @RequestBody LoginRequest loginRequest) {
+        return "send-message-kafka";
+    }
 }

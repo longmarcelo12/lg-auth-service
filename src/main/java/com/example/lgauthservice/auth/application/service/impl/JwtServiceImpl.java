@@ -68,14 +68,4 @@ public class JwtServiceImpl implements JwtService {
                 .parseSignedClaims(token)
                 .getPayload();
     }
-
-    private SecretKey getSigningKey() {
-
-        return Keys.hmacShaKeyFor(
-                jwtProperties.getSecretKey()
-                        .getBytes(
-                                StandardCharsets.UTF_8
-                        )
-        );
-    }
 }
